@@ -3,7 +3,7 @@
 import boto3
 
 
-def getAmiForVersionRole(version, role):
+def getAmiForVersionRole(role, version = None):
     ec2client = boto3.client('ec2')
     filters = [{'Name':'tag:imh:role', 'Values':[role]}]
     if version:
@@ -13,8 +13,9 @@ def getAmiForVersionRole(version, role):
     )
     return targetAmi
 
-def extractData(version, targetAmi):
+def extractData(targetAmi, version = '8.10.0-release-1'):
     #Name = version, Value = AMI_ID
+    #TODO: Get version from targetAmi
     versionToImageId = {}
     versionList = []
     for key, value in targetAmi.iteritems():
@@ -25,6 +26,11 @@ def extractData(version, targetAmi):
                 versionList.append(versionToImageId)
     return versionList
 
+version = '8.10.0-release-1'
+amiNoVersion = getAmiForVersionRole('hybris')
+amiVersion = getAmiForVersionRole('hybris', version)
 
-ami = getAmiForVersionRole('8.10.0-release-1', 'hybris')
-extractData('8.10.0-release-1', ami)
+#print('AMI No Version: {0} \n\n'.format(amiNoVersion))
+#print('AMI Version: {0} \n\n'.format(amiVersion))
+print('List No Version: {0} \n\n'.format(extractData(amiNoVersion)))
+print('List Version: {0} \n\n'.format(extractData(amiVersion, version)))
