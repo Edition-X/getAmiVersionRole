@@ -13,28 +13,18 @@ def getAmiForVersionRole(version, role):
     )
     return targetAmi
 
-def extractToDict(version, targetAmi):
+def extractData(version, targetAmi):
     #Name = version, Value = AMI_ID
     versionToImageId = {}
     versionList = []
     for key, value in targetAmi.iteritems():
         if key == 'Images': 
             for item in value:
-                versionToImageId['Name'] = vers
-                amiDict[('Name','Value')] = [[version],[item['ImageId']]
-    return amiDict
-               # for key2, value2 in x.iteritems():
-               #     if key2 == 'ImageId':
-               #         amiDict[('Name','Value')] = [[version], [value2]]
-               #         import pdb; pdb.set_trace() 
+                versionToImageId['Name'] = version
+                versionToImageId['Value'] = item['ImageId']
+                versionList.append(versionToImageId)
+    return versionList
 
-#if key == "ImageId":
-            #print(key, value)
-#import pdb; pdb.set_trace()
 
-#print("Without version:\n")
-#print(getAmiForVersion('', 'hybris'))
-#print("\n_________________________________\n")
-#print("With version:\n")
-ami = getAmiForVersion('8.10.0-release-1', 'hybris')
-extractToDict('8.10.0-release-1', ami)
+ami = getAmiForVersionRole('8.10.0-release-1', 'hybris')
+extractData('8.10.0-release-1', ami)
