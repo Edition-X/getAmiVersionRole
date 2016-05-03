@@ -13,24 +13,31 @@ def getAmiForVersionRole(role, version = None):
     )
     return targetAmi
 
-def extractData(targetAmi, version = '8.10.0-release-1'):
+
+def extractVersion(targetAmi):
+    version = ''
+    for key, value in targetAmi.iteritems():
+        if key == 'Images':
+            for item in value:
+                for element in item['Tags']:
+                    if element['Key'] == 'imh:version':
+                        version = element['Value']
+    return version
+
+def extractData(targetAmi, version):
     #Name = version, Value = AMI_ID
     #TODO: Get version from targetAmi
     versionToImageId = {}
     versionList = []
     for key, value in targetAmi.iteritems():
-        if key == 'Images': 
+        if key == 'Images':
             for item in value:
                 versionToImageId['Name'] = version
                 versionToImageId['Value'] = item['ImageId']
                 versionList.append(versionToImageId)
     return versionList
 
-version = '8.10.0-release-1'
-amiNoVersion = getAmiForVersionRole('hybris')
-amiVersion = getAmiForVersionRole('hybris', version)
-
-#print('AMI No Version: {0} \n\n'.format(amiNoVersion))
-#print('AMI Version: {0} \n\n'.format(amiVersion))
-print('List No Version: {0} \n\n'.format(extractData(amiNoVersion)))
+userVersion = '8.10.0-release-1'
+amiVersion = getAmiForVersionRole('hybris', userVersion)
+version = extractVersion(amiVersion)
 print('List Version: {0} \n\n'.format(extractData(amiVersion, version)))
