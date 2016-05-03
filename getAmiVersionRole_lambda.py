@@ -39,7 +39,8 @@ def extractData(targetAmi, version):
 
 
 def lambda_handler(event, context):
-    ami = getAmiForVersionRole(event['applicationVersion'], event['applicationRole'])
+    #ami = getAmiForVersionRole(event['applicationVersion'], event['applicationRole'])
+    ami = getAmiForVersionRole(event['8.10.0-release-1'], event['hybris'])
     version = extractVersion(ami)
     return extractData(ami, version)
 
