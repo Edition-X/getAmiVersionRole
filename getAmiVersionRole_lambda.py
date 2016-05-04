@@ -11,7 +11,7 @@ def getAmiForVersionRole(role, version = None):
     targetAmi = ec2client.describe_images(
            Filters = filters
     )
-    if targetAmi and len(targetAmi['Images'] and not role):
+    if targetAmi and len(targetAmi['Images']) and not role:
         return Exception('No AMI found for version: {0}'.format(version))
     return targetAmi
 
@@ -40,7 +40,7 @@ def extractData(targetAmi, version):
 
 def lambda_handler(event, context):
     #ami = getAmiForVersionRole(event['applicationVersion'], event['applicationRole'])
-    ami = getAmiForVersionRole(event['8.10.0-release-1'], event['hybris'])
+    ami = getAmiForVersionRole(event['role'], event['version'])
     version = extractVersion(ami)
     return extractData(ami, version)
 
