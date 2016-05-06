@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# VERSION NOT ALWAYS GIVEN !!!!!!
 import boto3
 
 
@@ -7,7 +6,7 @@ def getAmiForVersionRole(role, version = None):
     ec2client = boto3.client('ec2')
     filters = [{'Name':'tag:imh:role', 'Values':[role]}]
     if version:
-        filters += [{'Name':'tag:imh:version', 'Values':['{0}*'.format(version)]}]
+        filters += [{'Name':'tag:imh:version', 'Values':['{0}-*'.format(version)]}]
     targetAmi = ec2client.describe_images(
            Filters = filters
     )
@@ -25,22 +24,20 @@ def extractVersion(targetAmi):
     return version
 
 def extractData(targetAmi):
-    #Name = version, Value = AMI_ID
-    #TODO: Get version from targetAmi
-    currentTimestamp = 0
-    previousTimestamp = 0
+    previousCreationDate = 0
+    mostRecent = {}
     for key, value in targetAmi.iteritems():
         if key == 'Images':
             for item in value:
-                if item['CreationDate'] > currentTimestamp:
-                    previousTimestamp = currentTimestamp
-                    currentTimestamp = item['CreationDate']
-                    #loop through and check version starts with development
-    return timestampList
+                if item['CreationDate'] > previousCreationDate:
+                    previousCreationDate = item['CreationDate']
+                    mostRecent['Name'] = ''
+                    mostRecent['Value'] = item['ImageId']
+                    for i in item['Tags']:
+                        if i['Key'] == 'imh:version':
+                            mostRecent['Name'] = i['Value']
+    return mostRecent
 
-userVersion = 'development'
-#amiVersion = getAmiForVersionRole('hybris', 'feature-WSP-786-4')
-amiVersion = getAmiForVersionRole('hybris', userVersion)
-print(amiVersion)
-#version = extractVersion(amiVersion)
-#print('List Version: {0} \n\n'.format(extractData(amiVersion, version)))
+userPrefix = 'development'
+ami = getAmiForVersionRole('hybris', userPrefix)
+print(extractData(ami))
