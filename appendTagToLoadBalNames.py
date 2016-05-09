@@ -4,7 +4,7 @@ import boto3
 
 
 def extractLoadBalanceData(elb, loadBalancer):
-    extractedData = elb.describe_load_balancers(LoadBalancerName=[loadBalancer])
+    extractedData = elb.describe_load_balancers(LoadBalancerNames=[loadBalancer])
     return extractedData
 
 
@@ -13,5 +13,10 @@ def extractTagData(elb, loadBalancer):
     return extractedData
 
 
-loadBalancer = 'imh-acceptance-web'
-elb = boto3.client('elb')
+def lambda_handler(event, context):
+    elb = boto3.client('elb')
+    loadBalanceData = extractLoadBalanceData(elb, event['loadBalancer'])
+    tagData = extractTagData(elb, event['loadBalancer'])
+    loadBalanceDataCopy = loadBalanceData.copy()
+    mergedData = loadBalanceDataCopy.update(tagData)
+    return mergedData
