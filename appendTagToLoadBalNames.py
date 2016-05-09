@@ -12,11 +12,16 @@ def extractTagData(elb, loadBalancer):
     extractedData = elb.describe_tags(LoadBalancerNames=[loadBalancer])
     return extractedData
 
+loadBalancer = 'imh-test4-web'
+elb = boto3.client('elb')
+loadBalanceData = extractLoadBalanceData(elb, loadBalancer)
+tagData = extractTagData(elb, loadBalancer)
+#z = loadBalanceData.copy()
+#z = z.update(tagData)
+z = dict(loadBalanceData); z.update(tagData)
 
-def lambda_handler(event, context):
-    elb = boto3.client('elb')
-    loadBalanceData = extractLoadBalanceData(elb, event['loadBalancer'])
-    tagData = extractTagData(elb, event['loadBalancer'])
-    loadBalanceDataCopy = loadBalanceData.copy()
-    mergedData = loadBalanceDataCopy.update(tagData)
-    return mergedData
+
+print('LBD: {0}'.format(loadBalanceData))
+print('Tag: {0}'.format(tagData))
+print('And the winner is... \n\n\n\n')
+print(z)
