@@ -17,6 +17,5 @@ def lambda_handler(event, context):
     elb = boto3.client('elb')
     loadBalanceData = extractLoadBalanceData(elb, event['loadBalancer'])
     tagData = extractTagData(elb, event['loadBalancer'])
-    loadBalanceDataCopy = loadBalanceData.copy()
-    mergedData = loadBalanceDataCopy.update(tagData)
+    mergedData = dict(); mergedData.update(tagData)
     return mergedData
